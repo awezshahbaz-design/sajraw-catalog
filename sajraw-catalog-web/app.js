@@ -130,18 +130,18 @@ $('#all').onclick=()=>{db.cars.forEach(c=>c.selected=true);render();saveCars(db.
 $('#none').onclick=()=>{db.cars.forEach(c=>c.selected=false);render();saveCars(db.cars);};
 
 /* ---------- Dynamic Upload Handlers (Bypasses hidden input bugs) ---------- */
-const dz=$('#drop');
-if(dz){
-  dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')};
-  dz.ondragleave=()=>dz.classList.remove('over');
-  dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over');ingest([...e.dataTransfer.files]);};
+const dz = $('#drop');
+if (dz) {
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add('over'); };
+  dz.ondragleave = () => dz.classList.remove('over');
+  dz.ondrop = e => { e.preventDefault(); dz.classList.remove('over'); ingest([...e.dataTransfer.files]); };
 }
 
 function triggerFilePicker(captureMode) {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-  if(captureMode){
+  if (captureMode) {
     input.capture = 'environment';
   } else {
     input.multiple = true;
@@ -149,18 +149,18 @@ function triggerFilePicker(captureMode) {
   input.onchange = e => {
     const files = [...e.target.files];
     input.remove();
-    if(files.length) ingest(files);
+    if (files.length) ingest(files);
   };
   document.body.appendChild(input);
   input.click();
 }
 
 document.addEventListener('click', e => {
-  if(e.target.id === 'upF' || e.target.closest('#upF')){
+  if (e.target.id === 'upF' || e.target.closest('#upF')) {
     e.preventDefault();
     triggerFilePicker(false);
   }
-  if(e.target.id === 'upC' || e.target.closest('#upC')){
+  if (e.target.id === 'upC' || e.target.closest('#upC')) {
     e.preventDefault();
     triggerFilePicker(true);
   }
