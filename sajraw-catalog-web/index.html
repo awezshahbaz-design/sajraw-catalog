@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sajraw PDF Catalog Maker</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sajraw Catalog">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<style>
+:root{--red:#c0272d;--bg:#0b0b0b;--panel:#161616;--line:#2a2a2a;--sa-t:env(safe-area-inset-top,0px);--sa-b:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}body{background:var(--bg);color:#fff;font-family:-apple-system,"Segoe UI",Arial,sans-serif;padding-bottom:calc(86px + var(--sa-b))}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:calc(10px + var(--sa-t)) 14px 10px;border-bottom:2px solid var(--red);position:sticky;top:0;background:var(--bg);z-index:5}
+header img{height:46px;width:46px;object-fit:cover;border-radius:6px}
+header .t{flex:1;min-width:200px}header label{font-weight:700;letter-spacing:1px;font-size:12px;display:block;margin-bottom:3px}
+input[type=text],input[type=number],select,textarea{font-size:16px;padding:11px 12px;border:0;border-radius:6px;background:#fff;color:#111;width:100%;font-family:inherit}
+main{display:grid;grid-template-columns:1fr;gap:14px;padding:14px}
+@media(min-width:900px){main{grid-template-columns:1.25fr 1fr;max-width:1280px;margin:0 auto}}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+h2{margin:0 0 12px;text-align:center;font-size:14px;letter-spacing:1px;border-bottom:1px solid var(--red);padding-bottom:8px}
+#drop{border:2px dashed var(--red);border-radius:8px;text-align:center;padding:14px;margin-bottom:10px}
+#drop.over{background:#2a1214}#drop b{color:var(--red);display:block;margin-bottom:10px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.row button{flex:1 1 140px}
+button{cursor:pointer;border:0;border-radius:8px;padding:13px 14px;min-height:46px;font-weight:700;font-size:15px;background:#2c2c2c;color:#fff;font-family:inherit}
+button:active{background:#444}.red{background:var(--red)}button:disabled{opacity:.5}
+#status{font-size:13px;color:#bbb;min-height:18px;margin:8px 0}
+.car{display:grid;grid-template-columns:auto 76px 1fr;gap:10px;align-items:center;background:#fff;color:#111;border-radius:8px;padding:8px;margin-bottom:8px}
+.car input[type=checkbox]{width:24px;height:24px;accent-color:var(--red)}
+.car img,.car .noimg{width:76px;height:54px;object-fit:cover;border-radius:4px;background:#ddd}
+.car .i b{display:block;font-size:14px}.car .i small{color:#555;display:block}.car .pr{font-weight:800;color:var(--red)}
+.car .acts{grid-column:1/-1;display:flex;gap:8px}.car .acts button{flex:1;background:#f1f1f1;color:var(--red);min-height:40px;padding:8px}
+.opt{display:flex;align-items:center;gap:10px;margin:10px 0}.opt input[type=checkbox]{width:24px;height:24px;accent-color:var(--red);flex:none}
+.opt span{flex:none}.box{border:1px solid var(--line);padding:10px;border-radius:6px;margin-bottom:12px}
+textarea{height:84px;resize:vertical}
+footer{position:fixed;left:0;right:0;bottom:0;background:#101010;border-top:2px solid var(--red);padding:10px 14px calc(10px + var(--sa-b));display:flex;gap:12px;align-items:center;z-index:6}
+footer #sum{font-size:13px;line-height:1.35;flex:none}footer button{flex:1;font-size:16px}
+#done{display:none;position:fixed;left:10px;right:10px;bottom:calc(84px + var(--sa-b));background:#1d1d1d;border:1px solid var(--red);border-radius:10px;padding:12px;z-index:7}
+#done .row button{flex:1 1 120px}#done p{margin:0 0 10px;font-weight:700}
+#modal{display:none;position:fixed;inset:0;background:#000b;z-index:20}
+#modal .card{background:#1d1d1d;width:100%;max-width:860px;height:100%;overflow:auto;padding:calc(14px + var(--sa-t)) 14px calc(24px + var(--sa-b));margin:0 auto;-webkit-overflow-scrolling:touch}
+@media(min-width:900px){#modal{display:none;align-items:center;justify-content:center}#modal .card{height:auto;max-height:92vh;border-radius:10px;border:1px solid var(--red)}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
+.grid label,.lbl{font-size:12px;color:#bbb;display:block;margin-bottom:3px}.lbl{margin-top:12px}
+.fee{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:15px}.fee input[type=checkbox]{width:24px;height:24px;accent-color:var(--red);flex:none}
+.fee input[type=number]{width:110px;padding:8px}.fee span{flex:1}#feeNote{font-size:12px;color:#bbb;margin:4px 0 8px}
+.ph{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.ph div{position:relative}.ph img{width:104px;height:70px;object-fit:cover;border-radius:4px;display:block}.ph .main img{outline:2px solid var(--red)}
+.ph button{position:absolute;padding:0;width:32px;height:32px;min-height:0;background:#000c;border-radius:6px;font-size:16px}
+.ph button[data-rm],.ph button[data-rmd]{top:2px;right:2px}.ph button.m{top:2px;left:2px}.ph button.b{bottom:2px;right:2px}
+#login{display:none;position:fixed;inset:0;background:var(--bg);z-index:50;align-items:center;justify-content:center;padding:20px}
+#login .c{width:100%;max-width:380px;text-align:center}#login img{width:120px;border-radius:14px;margin-bottom:14px}#login input{margin-bottom:10px}#lerr{color:#ff7b7b;font-size:14px;min-height:20px;margin-bottom:8px}
+#pcalc{margin:12px 0;font-weight:700}.btns{display:flex;gap:10px}.btns button{flex:1}
+</style></head><body>
+<header><img src="assets/logo.png" alt=""><div class="t"><label for="catName">CATALOG NAME</label><input type="text" id="catName" placeholder="Sajraw Motors Trade Price Catalogue - October Edition"></div><button id="out" style="min-height:36px;padding:6px 10px;font-size:12px">Sign out</button></header>
+<main>
+<section><h2>VEHICLE LIBRARY &amp; UPLOAD HUB</h2>
+  <div id="drop"><b>ADD SCREENSHOTS / PHOTOS</b>
+    <div class="row"><button class="red" id="upF">📷 Photo Library / Files</button><button id="upC">📸 Take Photo</button></div>
+    <label style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:12px;font-size:14px"><input type="checkbox" id="perCar" style="width:22px;height:22px;accent-color:var(--red)"> One car per image</label></div>
+  <input type="file" id="fileIn" accept="image/*" multiple hidden><input type="file" id="camIn" accept="image/*" capture="environment" hidden>
+  <div id="status"></div><div id="list"></div></section>
+<section><h2>CATALOG CUSTOMIZER</h2>
+  <div class="box"><b>FRONT PAGE OPTIONS</b>
+    <div class="opt"><input type="checkbox" id="incPhone" checked><span>Phone number</span><input type="text" id="phone" inputmode="tel" placeholder="+44 ..."></div>
+    <div class="opt"><input type="checkbox" id="incEmail" checked><span>Email address</span><input type="text" id="email" inputmode="email" autocapitalize="off" placeholder="sales@..."></div>
+    <div class="opt"><input type="checkbox" id="incMessage" checked><span>Custom message block</span></div>
+    <textarea id="message" placeholder="Special Trade-in Deals This Month!"></textarea>
+    <div class="opt"><span>Subtitle</span><input type="text" id="subtitle" placeholder="Volkswagen Golf &amp; Golf GTI"></div>
+    <div class="opt"><span>£1 = ¥</span><input type="number" id="rate" inputmode="decimal" style="max-width:110px"></div></div>
+  <div class="box"><b>CATALOG PREVIEW</b><div id="sumBox" style="margin:8px 0"></div>
+    <div class="row"><button id="all">Select all</button><button id="none">Select none</button></div></div></section>
+</main>
+<div id="done"><p id="doneMsg"></p><div class="row"><button class="red" id="shareBtn">📤 Share</button><button id="dlBtn">⬇️ Download</button><button id="closeDone">Close</button></div></div>
+<footer><div id="sum"></div><button class="red" id="gen">GENERATE PDF</button></footer>
+
+<div id="login"><div class="c"><img src="assets/icon-192.png" alt=""><h2 style="border:0">SAJRAW CATALOG MAKER</h2><input type="text" id="lem" inputmode="email" autocapitalize="off" autocomplete="username" placeholder="Email"><input type="password" id="lpw" autocomplete="current-password" placeholder="Password" style="font-size:16px;padding:11px 12px;border:0;border-radius:6px;width:100%"><div id="lerr"></div><button class="red" id="lgo" style="width:100%">Sign in</button></div></div>
+<div id="modal"><div class="card"><h2 id="mt">EDIT CAR</h2><div class="grid" id="form"></div><div id="fees"></div>
+  <span class="lbl">Features (one per line)</span><textarea id="feat"></textarea>
+  <span class="lbl">Inspector notes</span><textarea id="notes"></textarea>
+  <div class="lbl" style="font-size:14px;color:#fff">PDF photos (first = main)</div><button id="addPh" style="width:100%;margin:6px 0">+ Add photos</button><div class="ph" id="phs"></div>
+  <div class="lbl" style="font-size:14px;color:#fff">Reference screenshots - kept in library, <b>never printed in the PDF</b></div><div class="ph" id="docs"></div>
+  <div id="pcalc"></div><div class="btns"><button class="red" id="ok">Save car</button><button id="cancel">Cancel</button></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="config.js"></script><script src="pricing.js"></script><script src="pdf-template.js"></script><script src="app.js"></script>
+</body></html>
