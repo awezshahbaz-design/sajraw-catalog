@@ -1,4 +1,4 @@
-const V = 'sajraw-v2';
+const V = 'sajraw-v4';
 const SHELL = ['./', 'index.html', 'app.js', 'config.js', 'pricing.js', 'pdf-template.js', 'manifest.webmanifest', 'assets/logo.png', 'assets/icon-192.png', 'assets/apple-touch-icon.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(V).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => clients.claim())));
