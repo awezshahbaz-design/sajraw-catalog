@@ -64,10 +64,6 @@ async function ocrKeys(keys) {
   for (const k of keys) texts.push((await worker.recognize(IMG[k])).data.text);
   return texts; // one string per image
 }
-const pickFiles = () => new Promise(res => {
-  const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.multiple = true; i.hidden = true;
-  document.body.appendChild(i); i.onchange = () => { res([...i.files]); i.remove(); }; i.click();
-});
 
 /* ---------- OCR text -> car (unchanged from desktop) ---------- */
 const FEATS={'Power windows':/power\s*window|\bP\/?W\b/i,'Power steering':/power\s*steering|\bP\/?S\b/i,'Alloy wheels':/alloy|\bAW\b/i,'Airbags':/air\s*bag|\bSRS\b/i,
@@ -135,21 +131,25 @@ $('#list').onchange=e=>{const id=e.target.dataset.sel;if(id){const c=db.cars.fin
 $('#all').onclick=()=>{db.cars.forEach(c=>c.selected=true);render();saveCars(db.cars);};
 $('#none').onclick=()=>{db.cars.forEach(c=>c.selected=false);render();saveCars(db.cars);};
 
-/* ---------- Upload ---------- */
+/* ---------- Upload & Button Handlers ---------- */
 const dz=$('#drop');
 dz.ondragover=e=>{e.preventDefault();dz.classList.add('over')};dz.ondragleave=()=>dz.classList.remove('over');
 dz.ondrop=e=>{e.preventDefault();dz.classList.remove('over');ingest([...e.dataTransfer.files]);};
-$('#upF').onclick=()=>$('#fileIn').click();$('#upC').onclick=()=>$('#camIn').click();
+
+// Connected click triggers for file inputs
+$('#upF').onclick = () => $('#fileIn').click();
+$('#upC').onclick = () => $('#camIn').click();
+
 for(const id of ['#fileIn','#camIn'])$(id).onchange=e=>{const f=[...e.target.files];e.target.value='';ingest(f);};
 
-/* ---------- Editor (same fields/logic as desktop) ---------- */
+/* ---------- Editor ---------- */
 const F=[['year','Year','number'],['make','Make'],['model','Model'],['grade','Grade'],['bodyType','Body type'],['colour','Colour'],['mileageKm','Mileage (km)','number'],
  ['mileageMi','Mileage (miles) - auto','number'],['engine','Engine (cc)'],['fuel','Fuel'],['transmission','Transmission'],['steering','Steering'],['vin','Chassis / VIN'],['stockId','Stock ID'],
  ['priceType','Price type','sel'],['baseYen','Car price (¥) - FOB','number'],['basePound','Car price (£) - Cleared','number']];
 function openEditor(c){
   cur=JSON.parse(JSON.stringify(c));$('#mt').textContent='EDIT CAR';
   $('#form').innerHTML=F.map(([k,l,t])=>`<div data-w="${k}"><label>${l}</label>`+(t==='sel'?`<select data-k="${k}"><option>FOB</option><option>Cleared</option></select>`:`<input data-k="${k}" type="${t==='number'?'number':'text'}" ${t==='number'?'inputmode="decimal"':''} value="${esc(cur[k])}">`)+'</div>').join('');
-  $('#form [data-k=priceType]').value=cur.priceType;$('#feat').value=(cur.features||[]).join('\n');$('#notes').value=cur.notes||'';
+  $('#form [data-k=priceType]').value=cur.priceType;$('#feat').value=(cur.features\vert{}\vert{}[]).join('\n');$('#notes').value=cur.notes||'';
   cur.docs=cur.docs||[];if(cur.basePound===undefined)cur.basePound=cur.priceType==='Cleared'?Math.round((cur.baseYen||0)/rate()):0;
   $('#form [data-k=basePound]').value=cur.basePound;
   $('#fees').innerHTML=[['incRoad','roadPrep','Road prep'],['incIva','iva','IVA test'],['incAdmin','admin','Administration fee']].map(([f,a,l])=>
@@ -182,7 +182,7 @@ $('#cancel').onclick=closeEd;
 $('#ok').onclick=()=>{cur.features=$('#feat').value.split('\n').map(s=>s.trim()).filter(Boolean);cur.notes=$('#notes').value;
   const i=db.cars.findIndex(c=>c.id===cur.id);db.cars[i]=cur;render();closeEd();saveCar(cur);};
 
-/* ---------- Catalog generator: browser PDF + share sheet ---------- */
+/* ---------- Catalog generator ---------- */
 const FIELDS=['catName','phone','email','message','subtitle','rate'],CHK=['incPhone','incEmail','incMessage'];
 function saveSettings(){FIELDS.forEach(k=>S()[k]=$('#'+k).value);CHK.forEach(k=>S()[k]=$('#'+k).checked);persistSettings();render();}
 [...FIELDS,...CHK].forEach(k=>$('#'+k).addEventListener('input',saveSettings));
@@ -228,7 +228,13 @@ const FIELDS_DEFAULT={rate:208.7,incPhone:true,incEmail:true,incMessage:true};
 function showLogin(msg){$('#login').style.display='flex';$('#lerr').textContent=msg||'';}
 async function boot(user){
   UID=user.id;navigator.storage?.persist?.();say('Loading your library...');
-  const [st,cars]=await Promise.all([sb.from('settings').select('data').maybeSingle(),sb.from('cars').select('data').order('created_at')]);
+  
+  // Safe load supporting tables whether created_at exists or not
+  const [st,cars]=await Promise.all([
+    sb.from('settings').select('data').maybeSingle(),
+    sb.from('cars').select('data, updated_at').order('updated_at', { ascending: false }).catch(() => sb.from('cars').select('data'))
+  ]);
+  
   cloudErr('load',cars.error||st.error);
   db.cars=(cars.data||[]).map(r=>r.data);
   db.settings=Object.assign({},FIELDS_DEFAULT,st.data?.data||{});
