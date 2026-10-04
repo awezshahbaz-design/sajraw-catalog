@@ -1,4 +1,5 @@
-const $ = s => document.querySelector(s);
+// Safe DOM selector helper
+function $(s) { return document.querySelector(s); }
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /* ---------- Supabase cloud storage (database + image bucket) ---------- */
