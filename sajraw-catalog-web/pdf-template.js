@@ -1,5 +1,5 @@
 // Builds the catalogue HTML (same layout/content as the desktop PDF). Pounds only.
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pdfEsc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nf = x => Math.round(x).toLocaleString('en-GB');
 
 const PDF_CSS = `
@@ -37,19 +37,19 @@ function buildPdfHtml({ cars, opts, rate, logo, src }) {
   let pg = 1;
   const ft = () => `<div class="ft"><span>Sajraw Motors Ltd</span><span>Page ${pg}</span></div>`;
   const title = c => c.title || [c.year, c.make, c.model, c.grade].filter(Boolean).join(' ');
-  const hdr = c => `<div class="hdr"><img src="${logo}"><div class="l"><b>SAJRAW MOTORS LTD</b><small>Trade Price Catalogue | ${esc(opts.name)}</small></div>
-    <div class="r"><b>${esc(title(c))}</b>${esc(c.stockId)}</div></div>`;
+  const hdr = c => `<div class="hdr"><img src="${logo}"><div class="l"><b>SAJRAW MOTORS LTD</b><small>Trade Price Catalogue | ${pdfEsc(opts.name)}</small></div>
+    <div class="r"><b>${pdfEsc(title(c))}</b>${pdfEsc(c.stockId)}</div></div>`;
 
   let html = `<div class="page cover"><img class="logo" src="${logo}"><div class="bar"></div>
-    <h1>${esc(opts.name || 'TRADE PRICE CATALOGUE').toUpperCase()}</h1><h2>${esc(opts.subtitle || '')}</h2>
-    ${opts.incMessage && opts.message ? `<div class="msg">${esc(opts.message).replace(/\n/g, '<br>')}</div>` : ''}
-    <div class="contact">${opts.incPhone && opts.phone ? 'Tel: ' + esc(opts.phone) + '<br>' : ''}${opts.incEmail && opts.email ? esc(opts.email) : ''}</div></div>`;
+    <h1>${pdfEsc(opts.name || 'TRADE PRICE CATALOGUE').toUpperCase()}</h1><h2>${pdfEsc(opts.subtitle || '')}</h2>
+    ${opts.incMessage && opts.message ? `<div class="msg">${pdfEsc(opts.message).replace(/\n/g, '<br>')}</div>` : ''}
+    <div class="contact">${opts.incPhone && opts.phone ? 'Tel: ' + pdfEsc(opts.phone) + '<br>' : ''}${opts.incEmail && opts.email ? pdfEsc(opts.email) : ''}</div></div>`;
 
   for (const c of cars) {
     pg++;
     const imgs = (c.images || []).map(src).filter(Boolean);
     const th = imgs.slice(1, 10);
-    html += `<div class="page">${hdr(c)}<div class="body"><h3>${esc(title(c))}</h3>
+    html += `<div class="page">${hdr(c)}<div class="body"><h3>${pdfEsc(title(c))}</h3>
       ${imgs[0] ? `<img class="main" src="${imgs[0]}">` : ''}
       <div class="th">${th.map((s, i) => `<div><img src="${s}">Photo ${i + 2}</div>`).join('')}</div></div>${ft()}</div>`;
     pg++;
@@ -59,11 +59,11 @@ function buildPdfHtml({ cars, opts, rate, logo, src }) {
       ['Steering', c.steering], ['Chassis / VIN', c.vin || 'To be confirmed'], ['Stock ID', c.stockId]].filter(r => r[1]);
     const pr = Pricing.calc(c, rate);
     html += `<div class="page">${hdr(c)}<div class="body"><h4>Vehicle Specifications</h4>
-      <table class="s">${rows.map(r => `<tr><td>${r[0]}</td><td>${esc(r[1])}</td></tr>`).join('')}</table>
-      ${c.features?.length ? `<h4>Features &amp; Options</h4><ul class="f">${c.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
-      ${c.notes ? `<div class="note"><b>Inspector notes</b>\n${esc(c.notes)}</div>` : ''}
+      <table class="s">${rows.map(r => `<tr><td>${r[0]}</td><td>${pdfEsc(r[1])}</td></tr>`).join('')}</table>
+      ${c.features?.length ? `<h4>Features &amp; Options</h4><ul class="f">${c.features.map(f => `<li>${pdfEsc(f)}</li>`).join('')}</ul>` : ''}
+      ${c.notes ? `<div class="note"><b>Inspector notes</b>\n${pdfEsc(c.notes)}</div>` : ''}
       <div class="ph"><b>TRADE PRICE</b><span>Estimated delivery: 2 - 4 weeks</span></div>
-      <table class="p">${pr.lines.map(l => `<tr><td>${esc(l[0])}</td><td>£${nf(l[1])}</td></tr>`).join('')}
+      <table class="p">${pr.lines.map(l => `<tr><td>${pdfEsc(l[0])}</td><td>£${nf(l[1])}</td></tr>`).join('')}
       <tr class="t"><td>TRADE PRICE</td><td>£${nf(pr.total)}</td></tr></table>
       </div>${ft()}</div>`;
   }
