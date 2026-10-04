@@ -138,31 +138,35 @@ if (dz) {
 }
 
 function triggerFilePicker(captureMode) {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  if (captureMode) {
-    input.capture = 'environment';
-  } else {
-    input.multiple = true;
-  }
-  input.onchange = e => {
-    const files = [...e.target.files];
-    input.remove();
-    if (files.length) ingest(files);
-  };
-  document.body.appendChild(input);
-  input.click();
+  return new Promise(resolve => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    if (captureMode) {
+      input.capture = 'environment';
+    } else {
+      input.multiple = true;
+    }
+    input.onchange = e => {
+      const files = [...e.target.files];
+      input.remove();
+      resolve(files);
+    };
+    document.body.appendChild(input);
+    input.click();
+  });
 }
 
-document.addEventListener('click', e => {
+document.addEventListener('click', async e => {
   if (e.target.id === 'upF' || e.target.closest('#upF')) {
     e.preventDefault();
-    triggerFilePicker(false);
+    const files = await triggerFilePicker(false);
+    if (files.length) ingest(files);
   }
   if (e.target.id === 'upC' || e.target.closest('#upC')) {
     e.preventDefault();
-    triggerFilePicker(true);
+    const files = await triggerFilePicker(true);
+    if (files.length) ingest(files);
   }
 });
 
@@ -200,7 +204,7 @@ $('#modal').onclick=e=>{const d=e.target.dataset;
   if(d.rmd!==undefined)cur.docs.splice(+d.rmd,1);
   if(d.topdf!==undefined)cur.images.push(...cur.docs.splice(+d.topdf,1));
   if(['rm','main','todoc','rmd','topdf'].some(k=>d[k]!==undefined))phs();};
-$('#addPh').onclick=async()=>{const g=await importFiles(await triggerFilePicker(false),false);if(g[0])cur.images.push(...g[0]);phs();};
+$('#addPh').onclick=async()=>{const files=await triggerFilePicker(false);if(files.length){const g=await importFiles(files,false);if(g[0])cur.images.push(...g[0]);phs();}};
 const closeEd=()=>{$('#modal').style.display='none';document.body.style.overflow='';};
 $('#cancel').onclick=closeEd;
 $('#ok').onclick=()=>{cur.features=$('#feat').value.split('\n').map(s=>s.trim()).filter(Boolean);cur.notes=$('#notes').value;
