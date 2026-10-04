@@ -173,7 +173,7 @@ document.addEventListener('click', async e => {
 /* ---------- Editor ---------- */
 const F=[['year','Year','number'],['make','Make'],['model','Model'],['grade','Grade'],['bodyType','Body type'],['colour','Colour'],['mileageKm','Mileage (km)','number'],
  ['mileageMi','Mileage (miles) - auto','number'],['engine','Engine (cc)'],['fuel','Fuel'],['transmission','Transmission'],['steering','Steering'],['vin','Chassis / VIN'],['stockId','Stock ID'],
- ['priceType','Price type','sel'],['baseYen','Car price (¥) - FOB','number'],['basePound','Car price (£) - Cleared','number']];
+ ['priceType','Price type','sel'],['baseYen','Car price (Yen) - FOB','number'],['basePound','Car price (GBP) - Cleared','number']];
 function openEditor(c){
   cur=JSON.parse(JSON.stringify(c));$('#mt').textContent='EDIT CAR';
   $('#form').innerHTML=F.map(([k,l,t])=>`<div data-w="${k}"><label>${l}</label>`+(t==='sel'?`<select data-k="${k}"><option>FOB</option><option>Cleared</option></select>`:`<input data-k="${k}" type="${t==='number'?'number':'text'}" ${t==='number'?'inputmode="decimal"':''} value="${esc(cur[k])}">`)+'</div>').join('');
@@ -181,7 +181,7 @@ function openEditor(c){
   cur.docs=cur.docs||[];if(cur.basePound===undefined)cur.basePound=cur.priceType==='Cleared'?Math.round((cur.baseYen||0)/rate()):0;
   $('#form [data-k=basePound]').value=cur.basePound;
   $('#fees').innerHTML=[['incRoad','roadPrep','Road prep'],['incIva','iva','IVA test'],['incAdmin','admin','Administration fee']].map(([f,a,l])=>
-   `<label class="fee"><input type="checkbox" data-k="${f}" ${cur[f]!==false?'checked':''}><span>${l} £</span><input data-k="${a}" type="number" inputmode="decimal" value="${cur[a]??0}"></label>`).join('')+'<div id="feeNote"></div>';
+   `<label class="fee"><input type="checkbox" data-k="${f}" ${cur[f]!==false?'checked':''}><span>${l} GBP</span><input data-k="${a}" type="number" inputmode="decimal" value="${cur[a]??0}"></label>`).join('')+'<div id="feeNote"></div>';
   vis();phs();calcLine();$('#modal').style.display='flex';$('#modal .card').scrollTop=0;document.body.style.overflow='hidden';
   getImgs([...cur.images,...cur.docs]).then(()=>cur&&phs());
 }
