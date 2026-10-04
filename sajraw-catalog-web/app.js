@@ -246,7 +246,7 @@ function openEditor(c){
     var k=item[0], l=item[1], t=item[2];
     return '<div data-w="'+k+'"><label>'+l+'</label>'+(t==='sel'?'<select data-k="'+k+'"><option>FOB</option><option>Cleared</option></select>':'<input data-k="'+k+'" type="'+(t==='number'?'number':'text')+'" '+(t==='number'?'inputmode="decimal"':'')+' value="'+esc(cur[k])+'">')+'</div>';
   }).join('');
-  $('#form [data-k=priceType]').value=cur.priceType;$('#feat').value=(cur.features||[]).join('\n');$('#notes').value=cur.notes||'';
+  $('#form [data-k=priceType]').value=cur.priceType;$('#feat').value=(cur.features\vert{}\vert{}[]).join('\n');$('#notes').value=cur.notes||'';
   cur.docs=cur.docs||[];if(cur.basePound===undefined)cur.basePound=cur.priceType==='Cleared'?Math.round((cur.baseYen||0)/rate()):0;
   $('#form [data-k=basePound]').value=cur.basePound;
   $('#fees').innerHTML=[['incRoad','roadPrep','Road prep'],['incIva','iva','IVA test'],['incAdmin','admin','Administration fee']].map(function(item){
@@ -323,7 +323,8 @@ async function logo(){
 
 async function makePdf(payload){
   var l = await logo();
-  var html=buildPdfHtml(Object.assign({},payload,{logo:l,src}));
+  // Fixed explicit property name `src: src` here
+  var html=buildPdfHtml(Object.assign({}, payload, { logo: l, src: src }));
   var fr=document.createElement('iframe');fr.style.cssText='position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0';
   document.body.appendChild(fr);
   await new Promise(function(r){fr.onload=r;fr.srcdoc=html;});
