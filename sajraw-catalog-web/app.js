@@ -1,6 +1,6 @@
 // Safe DOM selector helper
 function $(s) { return document.querySelector(s); }
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /* ---------- Supabase cloud storage (database + image bucket) ---------- */
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -207,7 +207,7 @@ $('#modal').onclick=e=>{const d=e.target.dataset;
 $('#addPh').onclick=async()=>{const files=await triggerFilePicker(false);if(files.length){const g=await importFiles(files,false);if(g[0])cur.images.push(...g[0]);phs();}};
 const closeEd=()=>{$('#modal').style.display='none';document.body.style.overflow='';};
 $('#cancel').onclick=closeEd;
-$('#ok').onclick=()=>{cur.features=$('#feat').value.split('\n').map(s=>s.trim()).filter(Boolean);cur.notes=$('#notes').value;
+$('#ok').onclick=()=>{cur.features=$('#feat'].value.split('\n').map(s=>s.trim()).filter(Boolean);cur.notes=$('#notes'].value;
   const i=db.cars.findIndex(c=>c.id===cur.id);db.cars[i]=cur;render();closeEd();saveCar(cur);};
 
 /* ---------- Catalog generator ---------- */
@@ -263,7 +263,7 @@ async function boot(user){
   cloudErr('load',cars.error||st.error);
   db.cars=(cars.data||[]).map(r=>r.data);
   db.settings=Object.assign({},FIELDS_DEFAULT,st.data?.data||{});
-  FIELDS.forEach(k=>$('#'+k).value=S()[k]??'');CHK.forEach(k=>$('#'+k).checked=!!S()[k]);
+  FIELDS.forEach(k=>$('#'+k).value=S()[k] \vert{}\vert{} '');CHK.forEach(k=>$('#'+k).checked=!!S()[k]);
   $('#login').style.display='none';render();say('');
 }
 $('#lgo').onclick=async()=>{$('#lerr').textContent='Signing in...';
